@@ -1,0 +1,110 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package flowershop;
+
+import javax.swing.JOptionPane;
+/**
+ *
+ * @author Canada_CPE
+ */
+public class FlowerShop {
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        String[] FlowerShop = {"Lotus flower", "Sun flower", "Rose flower", "sakura flower", "Zinnia flowers"};
+        double[] prices = {30, 20, 10, 30, 30.,};
+        int[] supply = {10, 10, 10, 10, 10};
+
+        // Add customers
+        String[] customers = {"arnold", "jullian", "thorfin", "1", "2", "3",};
+        double[] balances = {500, 500, 500, 500, 500, 500,};
+
+        boolean continueShopping = true;
+
+        String currentCustomer = ""; // Initialize current customer
+
+        while (continueShopping) {
+            // Ask for the customer's name
+            String inputName = JOptionPane.showInputDialog(null, "Enter your name:");
+
+            // Check if the input name is in the customer list
+            int customerIndex = getIndex(customers, inputName);
+            if (customerIndex == -1) {
+                JOptionPane.showMessageDialog(null, "Sorry, your name is not recognized. Please try again.");
+                continue;
+            }
+
+            currentCustomer = customers[customerIndex]; // Set the current customer
+
+            // Display customer choices
+            StringBuilder customerChoices = new StringBuilder("Welcome!, " + currentCustomer + "! Please choose which one you want to buy:\n");
+            for (int i = 0; i < FlowerShop.length; i++) {
+                customerChoices.append(i + 1).append(". ").append(FlowerShop[i]).append("\n");
+            }
+            JOptionPane.showMessageDialog(null, customerChoices.toString(), "Natoo", JOptionPane.INFORMATION_MESSAGE);
+
+            String FlowerChoice = (String) JOptionPane.showInputDialog(null, "Select a Flower:", "Flower Selection",
+                    JOptionPane.PLAIN_MESSAGE, null, FlowerShop, FlowerShop[0]);
+
+            int index = getIndex(FlowerShop, FlowerChoice);
+
+            JOptionPane.showMessageDialog(null, "Price of " + FlowerChoice + ": $" + prices[index]); // Added line
+
+            int quantity = Integer.parseInt(JOptionPane.showInputDialog(null, "How many " + FlowerChoice + "s do you want to buy?"));
+
+            if (quantity < 1 || quantity > 9) {
+                JOptionPane.showMessageDialog(null, "Sorry, we do not operate with that quantity. Please choose between 1 and 9.");
+                continue;
+            }
+
+            if (quantity > supply[index]) {
+                JOptionPane.showMessageDialog(null, "Sorry, there is not enough supply for " + FlowerChoice + ".");
+                continue;
+            }
+
+            double totalCost = prices[index] * quantity;
+
+            // Check for promo offer
+            if (quantity >= 3 && quantity % 2 == 0) {
+                int promoResponse = JOptionPane.showConfirmDialog(null, "Congratulations! You qualify for a 8% discount promo. Do you want to avail it?", "Promo Offer", JOptionPane.YES_NO_OPTION);
+                if (promoResponse == JOptionPane.YES_OPTION) {
+                    totalCost *= 0.7; // Apply 8% discount
+                }
+            }
+
+            if (totalCost > balances[customerIndex]) {
+                JOptionPane.showMessageDialog(null, "Sorry, " + currentCustomer + ", you don't have enough money to buy this Flower.");
+                continue;
+            }
+            
+
+            balances[customerIndex] -= totalCost;
+
+            JOptionPane.showMessageDialog(null, "Receipt:\n\nCustomer: " + currentCustomer + "\nFlower: " + FlowerChoice + "\nQuantity: " + quantity +
+                    "\nTotal Cost: $" + totalCost + "\nRemaining Balance: $" + balances[customerIndex]);
+
+            supply[index] -= quantity;
+
+            int response = JOptionPane.showConfirmDialog(null, "Thank you for purchasing our Flowers! ^^. Do you want to make another purchase?", "Continue Shopping", JOptionPane.YES_NO_OPTION);
+
+            continueShopping = (response == JOptionPane.YES_OPTION);
+        }
+
+        JOptionPane.showMessageDialog(null, "Thank you, " + currentCustomer + ", for stopping by our shop! Please come again.");
+    }
+
+    private static int getIndex(String[] array, String value) {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i].equalsIgnoreCase(value)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+}
